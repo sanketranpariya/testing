@@ -33,6 +33,18 @@ app.get("/", (req, res)=> {
 })
 
 app.post("/r", validator, async (req,res)=>{
+
+    if(req.body.questions){
+        return res.send("Error: 'questions' Array is not there in body")
+    }
+
+    if(req.body.questions.length == 0) {
+        return res.send("Error: 'questions' Array is Empty")
+    }
+
+    
+
+
     try{
         const frontendData= req.body;
         console.log(frontendData);
