@@ -19,7 +19,7 @@ const connectionReq = async ()=>{
         if(responseDb){
             console.log("DB Connected");
         } else {
-            console.log("Some unusual thing happened during DB Connection");
+            console.log("Some unusual thing happened during DB Connection")
         }
         return;
     } catch (error) {
