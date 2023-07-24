@@ -23,11 +23,9 @@ const connectionReq = async ()=>{
         }
         return;
     } catch (error) {
-        console.log(error);
-        return res.json({
+        return res.status(500).json({
             error: true,
-            msg: "Some Error Occured",
-            errMsg: error
+            errorMessage: error
         })
     }
 }
@@ -37,24 +35,10 @@ app.get("/", (req, res)=> {
     return res.send("Hello");
 })
 
-app.post("/r", validator, async (req,res)=>{
-
-    if(!req.body){
-        return res.json({
-            error: "Body not exist"
-        })
-    }
-
-    if(!req.body.questions){
-        return res.json({
-            error: "Array not arriverd",
-            body: req.body
-        })
-    }
+app.post("/hostquiz", validator, async (req,res)=>{
 
     try{
         const frontendData= req.body;
-        console.log(frontendData);
         const randomNumber = ()=>{
             return Math.floor(Math.random()*8999)+1000
         }
@@ -72,7 +56,10 @@ app.post("/r", validator, async (req,res)=>{
 
         const modelData = new quizModel(frontendData)
         const savedData = await modelData.save()
-        return res.send(savedData)
+        return res.status(200).json({
+            error: false,
+            quizCode: savedData.quizCode
+        })
     }
     catch(error){
         return res.status(401).json({
@@ -81,6 +68,7 @@ app.post("/r", validator, async (req,res)=>{
         })
     }
 })
+
 
 app.listen( process.env.PORT || port, ()=>{
     console.log(`server is running on port : ${port}`);
