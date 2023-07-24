@@ -23,7 +23,12 @@ const connectionReq = async ()=>{
         }
         return;
     } catch (error) {
-        return console.log(error);
+        console.log(error);
+        return res.json({
+            error: true,
+            msg: "Some Error Occured",
+            errMsg: error
+        })
     }
 }
 connectionReq();
