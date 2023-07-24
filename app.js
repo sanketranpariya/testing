@@ -39,6 +39,19 @@ app.get("/", (req, res)=> {
 
 app.post("/r", validator, async (req,res)=>{
 
+    if(!req.body){
+        return res.json({
+            error: "Body not exist"
+        })
+    }
+
+    if(!req.body.questions){
+        return res.json({
+            error: "Array not arriverd",
+            body: req.body
+        })
+    }
+
     try{
         const frontendData= req.body;
         console.log(frontendData);
