@@ -4,7 +4,7 @@ const app = express()
 const mongoose = require('mongoose')
 const cors = require('cors')
 const quizModel = require('./models/usermodel')
-const validator = require('./middleware/validationOne')
+const validator = require('./middleware/validations')
 const port = 3700
 
 //*middleware
@@ -31,11 +31,8 @@ const connectionReq = async ()=>{
 }
 connectionReq();
 
-app.get("/", (req, res)=> {
-    return res.send("Hello");
-})
 
-app.post("/hostquiz", validator, async (req,res)=>{
+app.post("/hostquiz", validator.validation, async (req,res)=>{
 
     try{
         const frontendData= req.body;
@@ -67,6 +64,31 @@ app.post("/hostquiz", validator, async (req,res)=>{
             errorMessage: error.message
         })
     }
+})
+
+app.get("/getquizdata/:code",validator.validationTwo,async (req,res)=>{
+    // console.log(req.params);
+    const quizDoc = await quizModel.findOne({quizCode : req.params.code})
+    if(!quizDoc){
+        return res.status(400).json({
+            error : true,
+            errorMessage : "code is "
+        })
+    }
+
+    const questionsArray = quizDoc.questions
+
+    for (let i = 0; i < questionsArray.length; i++) {
+        questionsArray[i].answer = undefined
+    }
+
+
+    // console.log(questionsArray);
+
+     res.status(200).json({
+        error : false,
+        questions : questionsArray
+    })
 })
 
 

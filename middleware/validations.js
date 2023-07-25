@@ -85,4 +85,23 @@ const validation = (req,res,next)=>{
     return next()
 }
 
-module.exports = validation
+const validationTwo = (req,res,next) =>{
+    const rCode = parseInt(req.params.code)
+
+    if(!rCode){
+        return res.status(400).json({
+            error : true,
+            errorMessage : "code must be a 'number'"
+        })
+    }
+   
+    if(rCode > 9999 || rCode < 1000){
+        return res.status(400).json({
+            error : true,
+            errorMessage : "code must be in range of 1000 to 9999 both inclusive"
+        })
+    }
+    return next()
+}
+
+module.exports = {validation , validationTwo}
