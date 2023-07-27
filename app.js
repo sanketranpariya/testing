@@ -43,8 +43,8 @@ app.post("/hostquiz", validator.validation, async (req,res)=>{
         
         const madan = async ()=>{
             const rNumber = randomNumber();
-            const raju = await quizModel.findOne({quizCode: rNumber})
-            if(raju){
+            const quizCodeNumber = await quizModel.findOne({quizCode: rNumber})
+            if(quizCodeNumber){
                 return madan();
             }
             frontendData.quizCode = rNumber
@@ -67,12 +67,11 @@ app.post("/hostquiz", validator.validation, async (req,res)=>{
 })
 
 app.get("/getquizdata/:code",validator.validationTwo,async (req,res)=>{
-    // console.log(req.params);
     const quizDoc = await quizModel.findOne({quizCode : req.params.code})
     if(!quizDoc){
         return res.status(400).json({
             error : true,
-            errorMessage : "code is "
+            errorMessage : "quizCode you had entered is not exist. Please check it again and try later."
         })
     }
 
@@ -81,14 +80,41 @@ app.get("/getquizdata/:code",validator.validationTwo,async (req,res)=>{
     for (let i = 0; i < questionsArray.length; i++) {
         questionsArray[i].answer = undefined
     }
-
-
-    // console.log(questionsArray);
-
+ 
      res.status(200).json({
         error : false,
         questions : questionsArray
     })
+})
+
+app.post('/checkanswers', async (req, res)=> {
+    const data = req.body;
+
+    console.log(data.answers);
+
+
+    const quizDoc = await quizModel.findOne({quizCode: data.quizCode})
+
+    if(quizDoc.questions.length !== data.answers.length){
+        return res.status(400).json({
+            error: true,
+            errorMessage: 'You sent more answers then questions in quiz. please check again and try later.'
+        })
+    }
+
+    let score = 0;
+
+    for (let i = 0; i < quizDoc.questions.length; i++) {
+        if(data.answers[i] === quizDoc.questions[i].answer) {
+            score++
+        }        
+    }
+    return res.status(200).json({
+        error: false, 
+        score: score,
+        outof: quizDoc.questions.length
+    })
+    console.log(score);
 })
 
 
