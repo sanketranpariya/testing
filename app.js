@@ -87,35 +87,81 @@ app.get("/getquizdata/:code",validator.validationTwo,async (req,res)=>{
     })
 })
 
-app.post('/checkanswers', async (req, res)=> {
+// app.post('/checkanswers', async (req, res)=> {
+//     const data = req.body;
+
+//     console.log(data.answers);
+
+
+//     const quizDoc = await quizModel.findOne({quizCode: data.quizCode})
+
+//     if(quizDoc.questions.length !== data.answers.length){
+//         return res.status(400).json({
+//             error: true,
+//             errorMessage: 'You sent more answers then questions in quiz. please check again and try later.'
+//         })
+//     }
+
+//     let score = 0;
+
+//     for (let i = 0; i < quizDoc.questions.length; i++) {
+//         if(data.answers[i] === quizDoc.questions[i].answer) {
+//             score++
+//         }        
+//     }
+//     return res.status(200).json({
+//         error: false, 
+//         score: score,
+//         outof: quizDoc.questions.length
+//     })
+//     console.log(score);
+// })
+
+app.post('/checkanswers', async (req, res) => {
     const data = req.body;
 
     console.log(data.answers);
 
+    try {
+        const quizDoc = await quizModel.findOne({ quizCode: data.quizCode });
+        if (!quizDoc) {
+            return res.status(400).json({
+                error: true,
+                errorMessage: 'The quizCode you entered does not exist. Please check it again and try later.'
+            });
+        }
 
-    const quizDoc = await quizModel.findOne({quizCode: data.quizCode})
+        if (quizDoc.questions.length !== data.answers.length) {
+            return res.status(400).json({
+                error: true,
+                errorMessage: 'You sent more answers than questions in the quiz. Please check again and try later.'
+            });
+        }
 
-    if(quizDoc.questions.length !== data.answers.length){
-        return res.status(400).json({
+        let score = 0;
+
+        for (let i = 0; i < quizDoc.questions.length; i++) {
+            if (data.answers[i] === quizDoc.questions[i].answer) {
+                score++;
+            }
+        }
+
+        console.log(score); // Log the score
+
+        return res.status(200).json({
+            error: false,
+            score: score,
+            outof: quizDoc.questions.length
+        });
+    } catch (error) {
+        console.error("Error checking answers:", error.message);
+        return res.status(500).json({
             error: true,
-            errorMessage: 'You sent more answers then questions in quiz. please check again and try later.'
-        })
+            errorMessage: "An error occurred while checking the answers. Please try again later."
+        });
     }
+});
 
-    let score = 0;
-
-    for (let i = 0; i < quizDoc.questions.length; i++) {
-        if(data.answers[i] === quizDoc.questions[i].answer) {
-            score++
-        }        
-    }
-    return res.status(200).json({
-        error: false, 
-        score: score,
-        outof: quizDoc.questions.length
-    })
-    console.log(score);
-})
 
 
 app.listen( process.env.PORT || port, ()=>{
