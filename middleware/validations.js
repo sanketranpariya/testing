@@ -104,5 +104,12 @@ const validationTwo = (req,res,next) =>{
     return next()
 }
 
+// const validationThree = (req, res, next)=>{
+//     const data = req.body.answers
+//     for (i=0;i<quizModel.questions.length;i++){
+//         if (data !== "")
+//     }
+// }
+
 
 module.exports = {validation , validationTwo}
